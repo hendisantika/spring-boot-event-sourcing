@@ -42,7 +42,7 @@ public class StockController {
     @DeleteMapping
     public void removeStock(@RequestBody Stock stock) throws JsonProcessingException {
         StockRemovedEvent event = StockRemovedEvent.builder().stockDetails(stock).build();
-        eventService.addEvent(event);
+        eventService.removeStockEvent(event);
     }
 
     @GetMapping

@@ -45,7 +45,7 @@ public class EventService {
         return eventRepository.save(eventStore);
     }
 
-    public EventStore addEvent(StockRemovedEvent event) throws JsonProcessingException {
+    public EventStore removeStockEvent(StockRemovedEvent event) throws JsonProcessingException {
 
         EventStore eventStore = new EventStore();
 
