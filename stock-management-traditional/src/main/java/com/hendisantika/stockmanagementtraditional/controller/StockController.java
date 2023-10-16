@@ -26,8 +26,8 @@ public class StockController {
 
     private final StockRepository stockRepository;
 
-    @PostMapping("/stock")
-    public void addStock(@RequestBody Stock stock) {
+    @PostMapping("/stocks")
+    public Stock addStock(@RequestBody Stock stock) {
         List<Stock> existingStockList = stockRepository.findByName(stock.getName());
 
         if (existingStockList != null && !existingStockList.isEmpty()) {
@@ -37,19 +37,19 @@ public class StockController {
 
             existingStock.setQuantity(newQuantity);
             existingStock.setAddedBy(stock.getAddedBy());
-            stockRepository.save(existingStock);
+            return stockRepository.save(existingStock);
         } else {
-            stockRepository.save(stock);
+            return stockRepository.save(stock);
         }
     }
 
-    @DeleteMapping("/stock")
+    @DeleteMapping("/stocks")
     public void removeStock(@RequestBody Stock stock) {
         int newQuantity = 0;
 
         List<Stock> existingStockList = stockRepository.findByName(stock.getName());
 
-        if (existingStockList != null && existingStockList.size() > 0) {
+        if (existingStockList != null && !existingStockList.isEmpty()) {
 
             Stock existingStock = existingStockList.get(0);
 
@@ -65,8 +65,14 @@ public class StockController {
         }
     }
 
-    @GetMapping("/stock")
-    public List<Stock> getStock(@RequestParam("name") String name) {
-        return stockRepository.findByName(name);
+    @GetMapping("/stocks")
+    public List<Stock> getStock(@RequestParam(value = "name", required = false) String name) {
+        List<Stock> stockList;
+        if (name == null) {
+            stockList = (List<Stock>) stockRepository.findAll();
+        } else {
+            stockList = stockRepository.findByName(name);
+        }
+        return stockList;
     }
 }
