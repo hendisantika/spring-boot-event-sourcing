@@ -1,16 +1,15 @@
 package com.hendisantika.stockmanagementeventstore.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
 import com.hendisantika.stockmanagementeventstore.dto.Stock;
 import com.hendisantika.stockmanagementeventstore.dto.StockAddedEvent;
 import com.hendisantika.stockmanagementeventstore.dto.StockRemovedEvent;
+import com.hendisantika.stockmanagementeventstore.entity.EventStore;
 import com.hendisantika.stockmanagementeventstore.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,5 +39,31 @@ public class StockController {
     public void removeStock(@RequestBody Stock stock) throws JsonProcessingException {
         StockRemovedEvent event = StockRemovedEvent.builder().stockDetails(stock).build();
         eventService.addEvent(event);
+    }
+
+    @GetMapping("/stocks")
+    public Stock getStock(@RequestParam("name") String name) throws JsonProcessingException {
+        Iterable<EventStore> events = eventService.fetchAllEvents(name);
+
+        Stock currentStock = new Stock();
+
+        currentStock.setName(name);
+        currentStock.setUser("NA");
+
+        for (EventStore event : events) {
+
+            Stock stock = new Gson().fromJson(event.getEventData(), Stock.class);
+
+            if (event.getEventType().equals("STOCK_ADDED")) {
+
+                currentStock.setQuantity(currentStock.getQuantity() + stock.getQuantity());
+            } else if (event.getEventType().equals("STOCK_REMOVED")) {
+
+                currentStock.setQuantity(currentStock.getQuantity() - stock.getQuantity());
+            }
+        }
+
+        return currentStock;
+
     }
 }
