@@ -1,8 +1,13 @@
 package com.hendisantika.stockmanagementeventstore.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hendisantika.stockmanagementeventstore.dto.Stock;
+import com.hendisantika.stockmanagementeventstore.dto.StockAddedEvent;
 import com.hendisantika.stockmanagementeventstore.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -22,4 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockController {
 
     private final EventService eventService;
+
+    @PostMapping("/stocks")
+    public void addStock(@RequestBody Stock stockRequest) throws JsonProcessingException {
+        StockAddedEvent event = StockAddedEvent.builder().stockDetails(stockRequest).build();
+        eventService.addEvent(event);
+    }
 }
