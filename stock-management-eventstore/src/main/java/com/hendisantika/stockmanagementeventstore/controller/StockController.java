@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-event-sourcing
@@ -70,5 +73,35 @@ public class StockController {
     @GetMapping("/events")
     public Iterable<EventStore> getEvents(@RequestParam("name") String name) throws JsonProcessingException {
         return eventService.fetchAllEvents(name);
+    }
+
+    @GetMapping("/history")
+    public Stock getStockUntilDate(@RequestParam("date") String date, @RequestParam("name") String name) throws JsonProcessingException {
+        String[] dateArray = date.split("-");
+
+        LocalDateTime dateTill = LocalDate.of(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2])).atTime(23, 59);
+
+        Iterable<EventStore> events = eventService.fetchAllEventsTillDate(name, dateTill);
+
+        Stock currentStock = new Stock();
+
+        currentStock.setName(name);
+        currentStock.setUser("NA");
+
+        for (EventStore event : events) {
+
+            Stock stock = new Gson().fromJson(event.getEventData(), Stock.class);
+
+            if (event.getEventType().equals("STOCK_ADDED")) {
+
+                currentStock.setQuantity(currentStock.getQuantity() + stock.getQuantity());
+            } else if (event.getEventType().equals("STOCK_REMOVED")) {
+
+                currentStock.setQuantity(currentStock.getQuantity() - stock.getQuantity());
+            }
+        }
+
+        return currentStock;
+
     }
 }
