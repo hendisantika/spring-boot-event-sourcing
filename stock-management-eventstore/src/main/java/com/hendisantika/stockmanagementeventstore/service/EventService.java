@@ -58,4 +58,10 @@ public class EventService {
 
         eventRepository.save(eventStore);
     }
+
+    public Iterable<EventStore> fetchAllEvents(String name) {
+
+        return eventRepository.findByEntityId(name);
+
+    }
 }
