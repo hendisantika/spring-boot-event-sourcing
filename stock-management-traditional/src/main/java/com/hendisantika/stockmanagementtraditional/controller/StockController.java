@@ -4,10 +4,7 @@ import com.hendisantika.stockmanagementtraditional.entity.Stock;
 import com.hendisantika.stockmanagementtraditional.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -66,5 +63,10 @@ public class StockController {
                 stockRepository.save(existingStock);
             }
         }
+    }
+
+    @GetMapping("/stock")
+    public List<Stock> getStock(@RequestParam("name") String name) {
+        return stockRepository.findByName(name);
     }
 }
