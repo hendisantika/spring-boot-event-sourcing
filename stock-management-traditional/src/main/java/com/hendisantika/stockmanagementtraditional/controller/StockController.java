@@ -4,6 +4,7 @@ import com.hendisantika.stockmanagementtraditional.entity.Stock;
 import com.hendisantika.stockmanagementtraditional.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +44,27 @@ public class StockController {
         } else {
             stockRepository.save(stock);
         }
+    }
 
+    @DeleteMapping("/stock")
+    public void removeStock(@RequestBody Stock stock) {
+        int newQuantity = 0;
+
+        List<Stock> existingStockList = stockRepository.findByName(stock.getName());
+
+        if (existingStockList != null && existingStockList.size() > 0) {
+
+            Stock existingStock = existingStockList.get(0);
+
+            newQuantity = existingStock.getQuantity() - stock.getQuantity();
+
+            if (newQuantity <= 0) {
+                stockRepository.delete(existingStock);
+            } else {
+                existingStock.setQuantity(newQuantity);
+                existingStock.setAddedBy(stock.getAddedBy());
+                stockRepository.save(existingStock);
+            }
+        }
     }
 }
