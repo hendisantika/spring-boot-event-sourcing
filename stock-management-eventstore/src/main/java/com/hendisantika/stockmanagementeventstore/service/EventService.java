@@ -1,9 +1,15 @@
 package com.hendisantika.stockmanagementeventstore.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hendisantika.stockmanagementeventstore.dto.StockAddedEvent;
+import com.hendisantika.stockmanagementeventstore.entity.EventStore;
 import com.hendisantika.stockmanagementeventstore.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,4 +28,19 @@ import org.springframework.stereotype.Service;
 public class EventService {
 
     private final EventRepository eventRepository;
+
+    public void addEvent(StockAddedEvent event) throws JsonProcessingException {
+
+        EventStore eventStore = new EventStore();
+
+        eventStore.setEventData(new ObjectMapper().writeValueAsString(event.getStockDetails()));
+
+        eventStore.setEventType("STOCK_ADDED");
+
+        eventStore.setEntityId(event.getStockDetails().getName());
+
+        eventStore.setEventTime(LocalDateTime.now());
+
+        eventRepository.save(eventStore);
+    }
 }
