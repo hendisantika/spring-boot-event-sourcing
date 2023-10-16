@@ -64,6 +64,10 @@ public class StockController {
         }
 
         return currentStock;
+    }
 
+    @GetMapping("/events")
+    public Iterable<EventStore> getEvents(@RequestParam("name") String name) throws JsonProcessingException {
+        return eventService.fetchAllEvents(name);
     }
 }
