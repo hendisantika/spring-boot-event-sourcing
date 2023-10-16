@@ -30,7 +30,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public void addEvent(StockAddedEvent event) throws JsonProcessingException {
+    public EventStore addEvent(StockAddedEvent event) throws JsonProcessingException {
 
         EventStore eventStore = new EventStore();
 
@@ -42,10 +42,10 @@ public class EventService {
 
         eventStore.setEventTime(LocalDateTime.now());
 
-        eventRepository.save(eventStore);
+        return eventRepository.save(eventStore);
     }
 
-    public void addEvent(StockRemovedEvent event) throws JsonProcessingException {
+    public EventStore addEvent(StockRemovedEvent event) throws JsonProcessingException {
 
         EventStore eventStore = new EventStore();
 
@@ -56,7 +56,7 @@ public class EventService {
 
         eventStore.setEventTime(LocalDateTime.now());
 
-        eventRepository.save(eventStore);
+        return eventRepository.save(eventStore);
     }
 
     public Iterable<EventStore> fetchAllEvents(String name) {

@@ -25,24 +25,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/stocks")
 public class StockController {
 
     private final EventService eventService;
 
-    @PostMapping("/stocks")
-    public void addStock(@RequestBody Stock stockRequest) throws JsonProcessingException {
+    @PostMapping
+    public EventStore addStock(@RequestBody Stock stockRequest) throws JsonProcessingException {
         StockAddedEvent event = StockAddedEvent.builder().stockDetails(stockRequest).build();
-        eventService.addEvent(event);
+        return eventService.addEvent(event);
     }
 
-    @DeleteMapping("/stocks")
+    @DeleteMapping
     public void removeStock(@RequestBody Stock stock) throws JsonProcessingException {
         StockRemovedEvent event = StockRemovedEvent.builder().stockDetails(stock).build();
         eventService.addEvent(event);
     }
 
-    @GetMapping("/stocks")
-    public Stock getStock(@RequestParam("name") String name) throws JsonProcessingException {
+    @GetMapping
+    public Stock getStock(@RequestParam(value = "name", required = false) String name) throws JsonProcessingException {
         Iterable<EventStore> events = eventService.fetchAllEvents(name);
 
         Stock currentStock = new Stock();
