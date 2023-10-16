@@ -3,6 +3,7 @@ package com.hendisantika.stockmanagementeventstore.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hendisantika.stockmanagementeventstore.dto.StockAddedEvent;
+import com.hendisantika.stockmanagementeventstore.dto.StockRemovedEvent;
 import com.hendisantika.stockmanagementeventstore.entity.EventStore;
 import com.hendisantika.stockmanagementeventstore.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,20 @@ public class EventService {
 
         eventStore.setEventType("STOCK_ADDED");
 
+        eventStore.setEntityId(event.getStockDetails().getName());
+
+        eventStore.setEventTime(LocalDateTime.now());
+
+        eventRepository.save(eventStore);
+    }
+
+    public void addEvent(StockRemovedEvent event) throws JsonProcessingException {
+
+        EventStore eventStore = new EventStore();
+
+        eventStore.setEventData(new ObjectMapper().writeValueAsString(event.getStockDetails()));
+
+        eventStore.setEventType("STOCK_REMOVED");
         eventStore.setEntityId(event.getStockDetails().getName());
 
         eventStore.setEventTime(LocalDateTime.now());
