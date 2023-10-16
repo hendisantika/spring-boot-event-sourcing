@@ -60,8 +60,10 @@ public class EventService {
     }
 
     public Iterable<EventStore> fetchAllEvents(String name) {
-
         return eventRepository.findByEntityId(name);
+    }
 
+    public Iterable<EventStore> fetchAllEventsTillDate(String name, LocalDateTime date) {
+        return eventRepository.findByEntityIdAndEventTimeLessThanEqual(name, date);
     }
 }
